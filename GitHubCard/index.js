@@ -1,3 +1,4 @@
+// import axios from "axios";
 const { default: axios } = require("axios");
 const cards = document.querySelector('.cards')
 
@@ -6,10 +7,19 @@ const cards = document.querySelector('.cards')
     (replacing the placeholder with your Github name):
     https://api.github.com/users/<your name>
 */
-axios.get('https://api.github.com/users/ashides76')
-  .then(res => {
-    console.log(res);
-  })
+const followersArray = ['ashides76', 'ShahJalpa', 'tetondan', 'dustinmyers', 'justsml', 'luishrd', 'bigknell'];
+
+followersArray.forEach(val => gitUserCard(val));
+
+function gitUserCard(userName) {
+  console.log('fire gitusercard');
+  axios.get(`https://api.github.com/users/${userName}`)
+    .then(res => {
+      cards.appendChild(gitCard(res.data));
+    })
+    .catch(err => console.log(err))
+}
+
 /*
   STEP 2: Inspect and study the data coming back, this is YOUR
     github info! You will need to understand the structure of this
@@ -22,13 +32,6 @@ axios.get('https://api.github.com/users/ashides76')
   STEP 4: Pass the data received from Github into your function,
     and append the returned markup to the DOM as a child of .cards
 */
-axios.get('https://api.github.com/users/ashides76')
-  .then(res => {
-    const card = myGitHub(res.data);
-    cards.appendChild(card);
-  })
-  .catch(err => console.log(err));
-
 /*
   STEP 5: Now that you have your own card getting added to the DOM, either
     follow this link in your browser https://api.github.com/users/<Your github name>/followers,
@@ -40,79 +43,65 @@ axios.get('https://api.github.com/users/ashides76')
     user, and adding that card to the DOM.
 */
 
-// const followersArray = ['tetondan', 'dustinmyers', 'justsml', 'luishrd', 'bigknell'];
-
-// const friendsArray = (nameReq) => {
-//   axios.get(`https://api.github.com/users/${nameReq}/followers`)
-//     .then(res => {
-//       followersArray.forEach(val => {
-//         res.data.login(val);
-//       })      
-//     })
-// } 
 /*
-  STEP 3: Create a function that accepts a single object as its only argument.
-    Using DOM methods and properties, create and return the following markup:
-
-    <div class="card">
-      <img src={image url of user} />
-      <div class="card-info">
-        <h3 class="name">{users name}</h3>
-        <p class="username">{users user name}</p>
-        <p>Location: {users location}</p>
-        <p>Profile:
-          <a href={address to users github page}>{address to users github page}</a>
-        </p>
-        <p>Followers: {users followers count}</p>
-        <p>Following: {users following count}</p>
-        <p>Bio: {users bio}</p>
-      </div>
+ STEP 3: Create a function that accepts a single object as its only argument.
+  Using DOM methods and properties, create and return the following markup:
+  <div class="card">
+    <img src={image url of user} />
+    <div class="card-info">
+      <h3 class="name">{users name}</h3>
+      <p class="username">{users user name}</p>
+      <p>Location: {users location}</p>
+      <p>Profile:
+        <a href={address to users github page}>{address to users github page}</a>
+      </p>
+      <p>Followers: {users followers count}</p>
+      <p>Following: {users following count}</p>
+      <p>Bio: {users bio}</p>
     </div>
+  </div>
 */
-const myGitHub = ({avatar_url, name, login, location, repos_url, followers, following, bio}) => {
+  const gitCard = (gitInfo) => {
   const card = document.createElement('div');
   const img = document.createElement('img');
   const cardInfo = document.createElement('div');
-  const cardName = document.createElement('h3');
-  const userName = document.createElement('p');
-  const userLocation = document.createElement('p');
+  const name = document.createElement('h3');
+  const login = document.createElement('p');
+  const location = document.createElement('p');
   const profile  = document.createElement('p');
-  const anchor = document.createElement('a');
-  const userFollows = document.createElement('p');
-  const userFollowing = document.createElement('p');
-  const userBio = document.createElement('p');
+  const profileLink = document.createElement('a');
+  const followers = document.createElement('p');
+  const following = document.createElement('p');
+  const bio = document.createElement('p');
 
   card.appendChild(img);
   card.appendChild(cardInfo);
-  cardInfo.appendChild(cardName);
-  cardInfo.appendChild(userName);
-  cardInfo.appendChild(userLocation);
+  cardInfo.appendChild(name);
+  cardInfo.appendChild(login);
+  cardInfo.appendChild(location);
   cardInfo.appendChild(profile);
-  cardInfo.appendChild(userFollows);
-  cardInfo.appendChild(userFollowing);
-  cardInfo.appendChild(userBio);
-  profile.appendChild(anchor);
+  profile.appendChild(profileLink);
+  cardInfo.appendChild(followers);
+  cardInfo.appendChild(following);
+  cardInfo.appendChild(bio);
 
   card.classList.add('card');
   cardInfo.classList.add('card-info')
-  cardName.classList.add('name')
-  userName.classList.add('username')
-
-  img.src = avatar_url;
-  cardName.textContent = name;
-  userName.textContent = login;
-  userLocation.textContent = `Location: ${location}`;
-  // profile.textContent = 'Profile:';
-  anchor.href = repos_url;
-  anchor.textContent = repos_url;
-  userFollows.textContent = `Followers: ${followers}`
-  userFollowing.textContent = `Following: ${following}`
-  userBio.textContent = `Bio: ${bio}`
+  name.classList.add('name')
+  location.classList.add('username')
+  img.src = gitInfo.avatar_url;
+  name.textContent = gitInfo.name;
+  login.textContent = gitInfo.login;
+  location.textContent = `Location: ${gitInfo.location}`;
+  profile.textContent = 'Profile:';
+  profileLink.href = gitInfo.repos_url;
+  profileLink.textContent = "Profile Link"
+  followers.textContent = `Followers: ${gitInfo.followers}`
+  following.textContent = `Following: ${gitInfo.following}`
+  bio.textContent = `Bio: ${gitInfo.bio}`
 
   return card;
 }
-// const testData = {url: 'https://avatars.githubusercontent.com/u/89215194?v=4', name: 'Ashish Desai', login: 'ashides76', location: 'Not Defined', repoURL: "https://api.github.com/users/ashides76/repos", followers: 0, following: 3, bio: 'None' }
-// cards.appendChild(myGitHub(testData));
 /*
   List of LS Instructors Github username's:
     tetondan
